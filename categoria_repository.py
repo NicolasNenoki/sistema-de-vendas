@@ -1,26 +1,29 @@
-from conexao import Conexao  # Ajuste o nome do arquivo se necessário
+from conexao import Conexao
 
 class CategoriaRepository:
     def __init__(self):
-        self.conexao = Conexao()  # Armazena instância completa da Conexao
+        self.conexao = Conexao()
 
     def find_all(self):
-            cursor = self.conexao.get_cursor()
+        cursor = self.conexao.get_cursor()
+        try:
             cursor.execute("SELECT CategoriaID as id, Nome as nome, Descricao as descricao FROM Categoria ORDER BY CategoriaID")
             return cursor.fetchall()
-
+        finally:
+            cursor.close()
 
     def find_by_id(self, categoria_id):
-            cursor = self.conexao.get_cursor()
+        cursor = self.conexao.get_cursor()
+        try:
             cursor.execute(
                 "SELECT CategoriaID as id, Nome as nome, Descricao as descricao FROM Categoria WHERE CategoriaID = %s",
                 (categoria_id,)
             )
             return cursor.fetchone()
-
+        finally:
+            cursor.close()
 
     def create(self, nome, descricao=""):
-        """Insere novo registro (ID auto-increment)."""
         cursor = None
         try:
             cursor = self.conexao.get_cursor()
@@ -39,7 +42,6 @@ class CategoriaRepository:
                 cursor.close()
 
     def update(self, categoria_id, nome, descricao=""):
-        """Atualiza registro existente."""
         cursor = None
         try:
             cursor = self.conexao.get_cursor()
@@ -58,7 +60,6 @@ class CategoriaRepository:
                 cursor.close()
 
     def delete(self, categoria_id):
-        """Remove registro pelo ID."""
         cursor = None
         try:
             cursor = self.conexao.get_cursor()
@@ -74,17 +75,4 @@ class CategoriaRepository:
                 cursor.close()
 
     def fechar_conexao(self):
-        """Fecha conexão do repositório."""
         self.conexao.fechar_conexao()
-
-
-# Instância global
-repo = CategoriaRepository()
-
-# Teste funcionando
-
-categorias = repo.find_all()
-print("Categorias encontradas:", categorias)
-    
-cat = repo.find_by_id(1)
-print("Categoria 1:", cat)
